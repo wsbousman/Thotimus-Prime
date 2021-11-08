@@ -23,6 +23,7 @@ const thoughtController = {
       .catch(err => res.json(err));
   },
 
+  // create new reaction using Mongoose's findOneAndUpdate query and $push operator
   addReaction({ params, body }, res) {
     Thought.findOneAndUpdate(
       { _id: params.commentId },
@@ -41,7 +42,7 @@ const thoughtController = {
   },
 
   // delete a single reaction using Mongoose's findOneAndUpdate query and $pull operator
-  removeReply({ params }, res) {
+  removeReaction({ params }, res) {
   Thought.findOneAndUpdate(
     { _id: params.thoughtId },
     { $pull: { reactions: { reactionId: params.reactionId } } },
