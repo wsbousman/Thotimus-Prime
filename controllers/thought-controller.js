@@ -2,6 +2,44 @@
 const { Thought, User } = require('../models');
 
 const thoughtController = {
+  // get all thoughts
+  getAllThoughts(req, res) {
+    Thought.find({})
+      .populate({
+        path: 'reactions',
+        select: '-__v'
+      })
+      .select('-__v')
+      .sort({ _id: -1 })
+      .then(dbThoughtData => res.json(dbThoughtData))
+      .catch(err => {
+        console.log(err);
+        res.status(400).json(err);
+      });
+  },
+
+  // get thought by id
+  getThought({ params }, res) {
+    Thought.findOne({ _id: params.id })
+      .populate({
+        path: 'reactions',
+        select: '-__v'
+      })
+      .select('-__v')
+      // validate/err
+      .then(dbThoughtData => {
+        if (!dbThoughtData) {
+          res.status(404).json({ message: 'No thought found with this id!' });
+          return;
+        }
+        res.json(dbThoughtData);
+      })
+      .catch(err => {
+        console.log(err);
+        res.status(400).json(err);
+      });
+  },
+
    // create new thought using Mongoose's create query and $push operator
    addThought({ params, body }, res) {
     Thought.create(body)
@@ -21,6 +59,24 @@ const thoughtController = {
         res.json(dbUserData);
       })
       .catch(err => res.json(err));
+  },
+
+  // update thought using Mongoose's findOneAndUpdate query and $push operator
+  updateThought({ params, body }, res) {
+    Thought.findOneAndUpdate(
+      { _id: params.id }, 
+      body,
+      { new: true }
+      )
+      // validate/err
+      .then(dbThoughtData => {
+        if (!dbThoughtData) {
+          res.status(404).json({ message: 'No thought found with this id!' });
+          return;
+        }
+        res.json(dbThoughtData);
+      })
+      .catch(err => res.status(400).json(err));
   },
 
   // create new reaction using Mongoose's findOneAndUpdate query and $push operator
