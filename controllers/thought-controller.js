@@ -20,7 +20,8 @@ const thoughtController = {
 
   // get thought by id
   getThought({ params }, res) {
-    Thought.findOne({ _id: params.id })
+    console.log(params);
+    Thought.findOne({ _id: params.thoughtId })
       .populate({
         path: 'reactions',
         select: '-__v'
@@ -64,7 +65,7 @@ const thoughtController = {
   // update thought using Mongoose's findOneAndUpdate query and $push operator
   updateThought({ params, body }, res) {
     Thought.findOneAndUpdate(
-      { _id: params.id }, 
+      { _id: params.thoughtId }, 
       body,
       { new: true }
       )
@@ -82,7 +83,7 @@ const thoughtController = {
   // create new reaction using Mongoose's findOneAndUpdate query and $push operator
   addReaction({ params, body }, res) {
     Thought.findOneAndUpdate(
-      { _id: params.commentId },
+      { _id: params.thoughtId },
       { $push: { reactions: body } },
       { new: true }
     )
